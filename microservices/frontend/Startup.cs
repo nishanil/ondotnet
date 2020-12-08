@@ -35,9 +35,10 @@ namespace frontend
                     baseAddress = new Uri("https://localhost:5901");
                 
                 client.BaseAddress = baseAddress;
-            })
-            .AddPolicyHandler(GetRetryPolicy())
-            .AddPolicyHandler(GetCircuitBreakerPolicy());
+            });
+            //  .AddPolicyHandler(GetRetryPolicy())
+            //  .AddPolicyHandler(GetCircuitBreakerPolicy());
+            // 
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -70,7 +71,7 @@ namespace frontend
         public static IAsyncPolicy<HttpResponseMessage> GetRetryPolicy()
         {
             return HttpPolicyExtensions.HandleTransientHttpError()
-                .WaitAndRetryAsync(2,
+                .WaitAndRetryAsync(5,
                     retryAttempt => TimeSpan.FromMilliseconds(Math.Pow(1.5, retryAttempt) * 1000),
                     (_, waitingTime) =>
                     {

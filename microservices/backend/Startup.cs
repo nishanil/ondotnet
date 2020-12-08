@@ -29,7 +29,12 @@ namespace backend
             services.AddSwaggerGen();
             services.AddStackExchangeRedisCache(o =>
             {
-               o.Configuration = Configuration.GetConnectionString("redis");
+               var con = Configuration.GetConnectionString("redis");
+               //default fallback
+               if(con==null)
+                con = "localhost:6379";
+
+                o.Configuration = con;
             });
         }
 

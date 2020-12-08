@@ -35,6 +35,7 @@ namespace frontend
          catch(HttpRequestException ex)
          {
             _logger.LogError(ex.Message);
+            throw;
          }
          return new WeatherForecast[] {};
 

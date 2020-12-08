@@ -23,8 +23,9 @@ namespace frontend.Pages
         public async Task OnGet([FromServices]WeatherClient client)
         {
             Forecasts = await client.GetWeatherAsync();
+            
             if(Forecasts.Count()==0)
-                ErrorMessage="We are unable to fetch weather info right now. Please try again after sometime.";
+                ErrorMessage="We are unable to fetch weather info right now. Please try again after some time.";
             else
                 ErrorMessage = string.Empty;
         }
