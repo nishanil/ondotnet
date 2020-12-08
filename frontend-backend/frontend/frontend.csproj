@@ -6,7 +6,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="$(TyeLibrariesPath)\Microsoft.Tye.Extensions.Configuration\Microsoft.Tye.Extensions.Configuration.csproj" />
+    <PackageReference Include="Microsoft.Tye.Extensions.Configuration" Version="0.3.0-*" />
   </ItemGroup>
 
 </Project>
