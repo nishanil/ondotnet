@@ -42,6 +42,9 @@ namespace backend.Controllers
         [HttpGet]
         public async Task<string> Get([FromServices] IDistributedCache cache)
         {
+            if(new Random().Next(50) < 20)
+                throw new Exception("System down");
+
             var weather = await cache.GetStringAsync("weather");
 
             if (weather == null)
