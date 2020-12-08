@@ -12,6 +12,8 @@ namespace frontend.Pages
     {
         private readonly ILogger<IndexModel> _logger;
         public WeatherForecast[] Forecasts { get; set; }
+
+        public string ErrorMessage {get;set;}
         
         public IndexModel(ILogger<IndexModel> logger)
         {
@@ -21,6 +23,10 @@ namespace frontend.Pages
         public async Task OnGet([FromServices]WeatherClient client)
         {
             Forecasts = await client.GetWeatherAsync();
+            if(Forecasts.Count()==0)
+                ErrorMessage="We are unable to fetch weather info right now. Please try again after sometime.";
+            else
+                ErrorMessage = string.Empty;
         }
     }
 }

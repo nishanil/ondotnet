@@ -12,11 +12,17 @@ services:
   project: backend/backend.csproj
 - name: frontend
   project: frontend/frontend.csproj
+  tags: 
+    - nobe
 - name: redis
   image: redis
   bindings:
   - port: 6379
     connectionString: "${host}:${port}"
+  tags: 
+    - nobe
 - name: redis-cli
   image: redis
   args: "redis-cli -h redis MONITOR"
+  tags: 
+  - nobe

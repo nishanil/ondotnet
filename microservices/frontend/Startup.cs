@@ -8,6 +8,9 @@ using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Polly;
+using Polly.Extensions.Http;
+using System.Net.Http;
 
 namespace frontend
 {
@@ -26,9 +29,15 @@ namespace frontend
             services.AddRazorPages();
             services.AddHttpClient<WeatherClient>(client =>
             {
-                // client.BaseAddress = new Uri("https://localhost:5901");
-                client.BaseAddress = Configuration.GetServiceUri("backend");
-            });
+                 var baseAddress = Configuration.GetServiceUri("backend");
+                 // if not running with tye, set to default
+                 if(baseAddress==null)
+                    baseAddress = new Uri("https://localhost:5901");
+                
+                client.BaseAddress = baseAddress;
+            })
+            .AddPolicyHandler(GetRetryPolicy())
+            .AddPolicyHandler(GetCircuitBreakerPolicy());
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -57,5 +66,20 @@ namespace frontend
                 endpoints.MapRazorPages();
             });
         }
+
+        public static IAsyncPolicy<HttpResponseMessage> GetRetryPolicy()
+        {
+            return HttpPolicyExtensions.HandleTransientHttpError()
+                .WaitAndRetryAsync(2,
+                    retryAttempt => TimeSpan.FromMilliseconds(Math.Pow(1.5, retryAttempt) * 1000),
+                    (_, waitingTime) =>
+                    {
+                        Console.WriteLine($"Retrying in {waitingTime.TotalSeconds}s");
+                    });
+        }
+
+        public static IAsyncPolicy<HttpResponseMessage> GetCircuitBreakerPolicy() =>
+            HttpPolicyExtensions.HandleTransientHttpError()
+                .CircuitBreakerAsync(15, TimeSpan.FromSeconds(15));
     }
 }
