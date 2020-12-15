@@ -21,12 +21,13 @@ Open [microservices/frontend/Startup.cs](https://github.com/nishanil/ondotnet/bl
 Run the sample again using `tye run`.
 
 
-## Managing resiliency using Linkerd Service Mesh
+## Managing resiliency using Service Mesh
 
-First, deploy the application and its dependencies to Kubernetes before the services can be meshed.
+Samples covers both Linkerd and Istio configurations. The instructions are detailed out below.
 
 ### Deploying dependencies
 
+First, deploy the application and its dependencies to Kubernetes before the services can be meshed.
 <b>Redis</b>
 
 Run the following command from CLI:
