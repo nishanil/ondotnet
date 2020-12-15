@@ -62,27 +62,27 @@ Run the following command from the CLI and provide your dockerhub/acr details fo
 tye deploy -i
 ```
 
- You'll be prompted for the connection string for redis. 
+You'll be prompted for the connection string for redis. 
 
-    ```text
-    Validating Secrets...
-        Enter the connection string to use for service 'redis':
-    ```
+```
+Validating Secrets...
+    Enter the connection string to use for service 'redis':
+```
 
-    Enter the following to use instance that you just deployed:
+Enter the following to use instance that you just deployed:
 
-    ```text
-    redis:6379
-    ```
+```
+redis:6379
+```
 
-    `tye deploy` will create kubernetes secret to store the connection string.
+`tye deploy` will create kubernetes secret to store the connection string.
 
-    ```text
-    Validating Secrets...
-        Enter the connection string to use for service 'redis': redis:6379
-        Created secret 'binding-production-redis-secret'.
-    ```
-  Tye will prompt for the zipkin URI. If you've followed these basic instructions, then use `http://zipkin:9411`.
+```
+Validating Secrets...
+    Enter the connection string to use for service 'redis': redis:6379
+    Created secret 'binding-production-redis-secret'.
+```
+Tye will prompt for the zipkin URI. If you've followed these basic instructions, then use `http://zipkin:9411`.
     
 
 If you're new to tye, checkout the guide [Getting started with Deployment](https://github.com/dotnet/tye/blob/master/docs/tutorials/hello-tye/01_deploy.md)
