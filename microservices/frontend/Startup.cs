@@ -35,9 +35,10 @@ namespace frontend
                     baseAddress = new Uri("https://localhost:5901");
                 
                 client.BaseAddress = baseAddress;
-            })
-             .AddPolicyHandler(GetRetryPolicy())
-             .AddPolicyHandler(GetCircuitBreakerPolicy());
+            });
+            // // uncomment the code below for handling partial failures in code
+            //  .AddPolicyHandler(GetRetryPolicy())
+            //  .AddPolicyHandler(GetCircuitBreakerPolicy());
             // 
         }
 
