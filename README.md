@@ -82,7 +82,7 @@ kubectl port-forward svc/frontend 3000:80
 
 Open, [http://localhost:3000/](http://localhost:3000/) and checkout the page. Refresh a couple of times to see the error pop up randomly.
 
- ### Adding Service Mesh
+ ### Adding Service Mesh (Linkerd)
 
  Download and install the [Linkerd CLI](https://github.com/linkerd/linkerd2/releases/) from the release page and add it to the `PATH`.
 
@@ -173,7 +173,7 @@ linkerd dashboard &
 Run the following commands one by one:
 
  ```
- kubectl get deploy frontend -o yaml | linkerd inject - | kubectl apply -f -
+kubectl get deploy frontend -o yaml | linkerd inject - | kubectl apply -f -
 
 kubectl get deploy backend -o yaml | linkerd inject - | kubectl apply -f -
 
@@ -187,13 +187,127 @@ Navigate to Linkerd Dashboard, and ensure the services are meshed.
 
  #### Configuring Resiliency
 
- Navigate to `servicemesh` folder and run the following command from the CLI:
+ Navigate to `servicemesh\linkerd` folder and run the following command from the CLI:
 
  ```
- kubectl apply -f .\backendProfile.yaml
+ kubectl apply -f .\backendServiceProfile.yaml
  ```
-Forward port and navigate to the site to see the partial failures go away.
+Forward port to your frontend service and navigate to the site to see the partial failures go away.
 
-That's it! 
+If you wish to use Istio instead of Linkerd, the following section will guide you install Istio as the service mesh and to configure resliency.
+
+ ### Adding Service Mesh (Istio)
+
+ Download and install the [istioctl](https://github.com/istio/istio/releases/) from the release page and add it to the `PATH`.
+
+ #### Validate your Kubernetes cluster
+
+ ```
+ istioctl x precheck
+ ```
+ On success, you should get a result like this:
+
+```
+➜  Source istioctl x precheck
+
+Checking the cluster to make sure it is ready for Istio installation...
+
+#1. Kubernetes-api
+-----------------------
+Can initialize the Kubernetes client.
+Can query the Kubernetes API Server.
+
+#2. Kubernetes-version
+-----------------------
+Istio is compatible with Kubernetes: v1.18.8.
+
+#3. Istio-existence
+-----------------------
+Istio will be installed in the istio-system namespace.
+
+#4. Kubernetes-setup
+-----------------------
+Can create necessary Kubernetes configurations: Namespace,ClusterRole,ClusterRoleBinding,CustomResourceDefinition,Role,ServiceAccount,Service,Deployments,ConfigMap.
+
+#5. SideCar-Injector
+-----------------------
+This Kubernetes cluster supports automatic sidecar injection. To enable automatic sidecar injection see https://istio.io/v1.8/docs/setup/additional-setup/sidecar-injection/#deploying-an-app
+
+-----------------------
+Install Pre-Check passed! The cluster is ready for Istio installation.
+
+```
+ #### Install Istio onto the Kubernetes cluster
+Run the following command to install Istio onto the cluster with `default` config profile:
+
+```
+istioctl install --set profile=default
+```
+On success, you should get a result like this:
+```
+➜  Source istioctl install --set profile=default
+This will install the Istio default profile with ["Istio core" "Istiod" "Ingress gateways"] components into the cluster. Proceed? (y/N) y
+Detected that your cluster does not support third party JWT authentication. Falling back to less secure first party JWT. See https://istio.io/v1.8/docs/ops/best-practices/security/#configure-third-party-service-account-tokens for details.
+✔ Istio core installed
+✔ Istiod installed
+✔ Ingress gateways installed
+✔ Installation complete
+```
+More about Installation Configure Profiles, check the [documentation](https://istio.io/latest/docs/setup/additional-setup/config-profiles/)
+
+Check the installation status with the following command:
+
+```
+kubectl -n istio-system get pods
+```
+Resulting to:
+```
+➜  Source kubectl -n istio-system get pods
+NAME                                    READY   STATUS    RESTARTS   AGE
+istio-ingressgateway-77bcf54747-24nvh   1/1     Running   0          3m22s
+istiod-66bcf5d94f-s22s7                 1/1     Running   0          3m40s
+```
+#### Add services to the Mesh
+
+You can configure the services that you like to add to the mesh. Since our services were deployed using `Tye`, we didn't have to work with Kubernetes deployment files. Hence we will use the following commands to extract the deployments and inject Istio annotations and redploy them onto the cluster.
+
+Run the following commands one by one:
+
+ ```
+kubectl get deploy backend -o yaml | istioctl kube-inject -f - | kubectl apply -f -
+kubectl get deploy frontend -o yaml | istioctl kube-inject -f - | kubectl apply -f -
+kubectl get deploy redis -o yaml | istioctl kube-inject -f - | kubectl apply -f -
+kubectl get deploy zipkin -o yaml | istioctl kube-inject -f - | kubectl apply -f -
+ ```
+
+#### Configuring Resiliency
+
+ Navigate to `servicemesh\istio` folder and run the following command from the CLI:
+
+ ```
+ kubectl apply -f .\backendVirtualService.yaml
+ ```
+ 
+To install a `Kiali` dashboard, along with `Prometheus`, `Grafana`, and `Jaeger`, run the following commands:
+
+```
+kubectl apply -f https://raw.githubusercontent.com/istio/istio/release-1.8/samples/addons/prometheus.yaml
+
+kubectl apply -f https://raw.githubusercontent.com/istio/istio/release-1.8/samples/addons/grafana.yaml
+
+kubectl apply -f https://raw.githubusercontent.com/istio/istio/release-1.8/samples/addons/jaeger.yaml
+
+kubectl apply -f https://raw.githubusercontent.com/istio/istio/release-1.8/samples/addons/kiali.yaml
+```
+To run the dashboard, run these commands:
+
+```
+kubectl rollout status deployment/kiali -n istio-system
+
+istioctl dashboard kiali
+```
+Forward port to your frontend service and navigate to the site to see the partial failures go away.
+
+That's it!
 
  [@nishanil](https://twitter.com/nishanil)
