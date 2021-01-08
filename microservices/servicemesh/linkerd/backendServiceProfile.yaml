@@ -10,8 +10,8 @@ spec:
       method: GET
       pathRegex: /weatherforecast
     name: GET /weatherforecast
-    isRetryable: true
-  retryBudget:
-    retryRatio: 0.2
-    minRetriesPerSecond: 10
-    ttl: 10s
+  #   isRetryable: true
+  # retryBudget:
+  #   retryRatio: 0.2
+  #   minRetriesPerSecond: 10
+  #   ttl: 10s

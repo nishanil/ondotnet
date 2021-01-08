@@ -26,46 +26,46 @@ namespace backend.Controllers
             _logger = logger;
         }
 
-        //  [HttpGet]
-        //  public IEnumerable<WeatherForecast> Get()
-        //  {
-        //      var rng = new Random();
-        //      return Enumerable.Range(1, 5).Select(index => new WeatherForecast
-        //      {
-        //          Date = DateTime.Now.AddDays(index),
-        //          TemperatureC = rng.Next(-20, 55),
-        //          Summary = Summaries[rng.Next(Summaries.Length)]
-        //      })
-        //      .ToArray();
-        //  }
+         [HttpGet]
+         public IEnumerable<WeatherForecast> Get()
+         {
+             var rng = new Random();
+             return Enumerable.Range(1, 5).Select(index => new WeatherForecast
+             {
+                 Date = DateTime.Now.AddDays(index),
+                 TemperatureC = rng.Next(-20, 55),
+                 Summary = Summaries[rng.Next(Summaries.Length)]
+             })
+             .ToArray();
+         }
 
-        [HttpGet]
-        public async Task<string> Get([FromServices] IDistributedCache cache)
-        {
-            if(new Random().Next(50) < 20)
-                throw new Exception("System down");
+        // [HttpGet]
+        // public async Task<string> Get([FromServices] IDistributedCache cache)
+        // {
+        //     if(new Random().Next(50) < 20)
+        //         throw new Exception("System down");
 
-            var weather = await cache.GetStringAsync("weather");
+        //     var weather = await cache.GetStringAsync("weather");
 
-            if (weather == null)
-            {
-                var rng = new Random();
-                var forecasts = Enumerable.Range(1, 5).Select(index => new WeatherForecast
-                {
-                    Date = DateTime.Now.AddDays(index),
-                    TemperatureC = rng.Next(-20, 55),
-                    Summary = Summaries[rng.Next(Summaries.Length)]
-                })
-                .ToArray();
+        //     if (weather == null)
+        //     {
+        //         var rng = new Random();
+        //         var forecasts = Enumerable.Range(1, 5).Select(index => new WeatherForecast
+        //         {
+        //             Date = DateTime.Now.AddDays(index),
+        //             TemperatureC = rng.Next(-20, 55),
+        //             Summary = Summaries[rng.Next(Summaries.Length)]
+        //         })
+        //         .ToArray();
 
-                weather = JsonSerializer.Serialize(forecasts);
+        //         weather = JsonSerializer.Serialize(forecasts);
 
-                await cache.SetStringAsync("weather", weather, new DistributedCacheEntryOptions
-                {
-                    AbsoluteExpirationRelativeToNow = TimeSpan.FromSeconds(5)
-                });
-            }
-            return weather;
-        }
+        //         await cache.SetStringAsync("weather", weather, new DistributedCacheEntryOptions
+        //         {
+        //             AbsoluteExpirationRelativeToNow = TimeSpan.FromSeconds(5)
+        //         });
+        //     }
+        //     return weather;
+        // }
     }
 }

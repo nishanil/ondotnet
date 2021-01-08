@@ -29,10 +29,8 @@ namespace frontend
             services.AddRazorPages();
             services.AddHttpClient<WeatherClient>(client =>
             {
-                 var baseAddress = Configuration.GetServiceUri("backend");
-                 // if not running with tye, set to default
-                 if(baseAddress==null)
-                    baseAddress = new Uri("https://localhost:5901");
+                //  var baseAddress = Configuration.GetServiceUri("backend");
+                 var baseAddress = new Uri("https://localhost:5901");
                 
                 client.BaseAddress = baseAddress;
             });
