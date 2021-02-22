@@ -27,7 +27,7 @@ namespace frontend
             services.AddRazorPages();
             services.AddHttpClient<WeatherClient>(client =>
             {
-                 var baseAddress = new Uri("https://localhost:5901");
+                 var baseAddress = new Uri(Configuration.GetValue<string>("backendUrl"));
                 
                 client.BaseAddress = baseAddress;
             });
