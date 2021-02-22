@@ -27,15 +27,6 @@ namespace backend
         {
             services.AddControllers();
             services.AddSwaggerGen();
-            services.AddStackExchangeRedisCache(o =>
-            {
-               var con = Configuration.GetConnectionString("redis");
-               //default fallback
-               if(con==null)
-                con = "localhost:6379";
-
-                o.Configuration = con;
-            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
